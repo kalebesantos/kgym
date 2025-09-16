@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, CreditCard } from "lucide-react";
 import { AddStudentDialog } from "@/components/students/AddStudentDialog";
+import { EditStudentDialog } from "@/components/students/EditStudentDialog";
+import { DeleteStudentDialog } from "@/components/students/DeleteStudentDialog";
+import { ManageStudentPlanDialog } from "@/components/students/ManageStudentPlanDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +47,11 @@ export default function Students() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showManagePlanDialog, setShowManagePlanDialog] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudentPlan, setSelectedStudentPlan] = useState<any>(null);
 
   useEffect(() => {
     fetchStudents();
@@ -104,10 +112,26 @@ export default function Students() {
 
   const getCurrentPlan = (student: Student) => {
     if (!student.student_plans || student.student_plans.length === 0) {
-      return '-';
+      return null;
     }
     const activePlan = student.student_plans.find(sp => sp.status === 'active');
-    return activePlan?.plans?.name || '-';
+    return activePlan || null;
+  };
+
+  const handleEditStudent = (student: Student) => {
+    setSelectedStudent(student);
+    setShowEditDialog(true);
+  };
+
+  const handleDeleteStudent = (student: Student) => {
+    setSelectedStudent(student);
+    setShowDeleteDialog(true);
+  };
+
+  const handleManagePlan = (student: Student) => {
+    setSelectedStudent(student);
+    setSelectedStudentPlan(getCurrentPlan(student));
+    setShowManagePlanDialog(true);
   };
 
   const filteredStudents = students.filter(student =>
@@ -202,7 +226,7 @@ export default function Students() {
                       </TableCell>
                       <TableCell>{student.phone || '-'}</TableCell>
                       <TableCell>{student.cpf || '-'}</TableCell>
-                      <TableCell>{getCurrentPlan(student)}</TableCell>
+                      <TableCell>{getCurrentPlan(student)?.plans?.name || '-'}</TableCell>
                       <TableCell>
                         <Badge variant={status.variant}>
                           {status.label}
@@ -220,16 +244,19 @@ export default function Students() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEditStudent(student)}>
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleManagePlan(student)}>
                               <CreditCard className="h-4 w-4 mr-2" />
                               Gerenciar Plano
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={() => handleDeleteStudent(student)}
+                            >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Excluir
                             </DropdownMenuItem>
@@ -249,6 +276,28 @@ export default function Students() {
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
         onStudentAdded={fetchStudents}
+      />
+
+      <EditStudentDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        onStudentUpdated={fetchStudents}
+        student={selectedStudent}
+      />
+
+      <DeleteStudentDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onStudentDeleted={fetchStudents}
+        student={selectedStudent}
+      />
+
+      <ManageStudentPlanDialog
+        open={showManagePlanDialog}
+        onOpenChange={setShowManagePlanDialog}
+        onPlanUpdated={fetchStudents}
+        student={selectedStudent}
+        currentPlan={selectedStudentPlan}
       />
     </div>
   );

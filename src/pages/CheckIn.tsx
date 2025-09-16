@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { QrCode, Scan, Clock, CheckCircle } from "lucide-react";
+import { QrCode, Scan, Clock, CheckCircle, History } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { CheckInHistoryDialog } from "@/components/checkins/CheckInHistoryDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -12,6 +13,7 @@ export default function CheckIn() {
   const [qrInput, setQrInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [lastCheckIn, setLastCheckIn] = useState<any>(null);
+  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
   const { toast } = useToast();
   const { profile } = useAuth();
 
@@ -104,13 +106,23 @@ export default function CheckIn() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-          Check-in
-        </h1>
-        <p className="text-muted-foreground">
-          Sistema de controle de acesso à academia
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            Check-in
+          </h1>
+          <p className="text-muted-foreground">
+            Sistema de controle de acesso à academia
+          </p>
+        </div>
+        <Button 
+          variant="outline" 
+          onClick={() => setShowHistoryDialog(true)}
+          className="flex items-center gap-2"
+        >
+          <History className="h-4 w-4" />
+          Histórico
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -239,6 +251,11 @@ export default function CheckIn() {
           </div>
         </CardContent>
       </Card>
+
+      <CheckInHistoryDialog
+        open={showHistoryDialog}
+        onOpenChange={setShowHistoryDialog}
+      />
     </div>
   );
 }

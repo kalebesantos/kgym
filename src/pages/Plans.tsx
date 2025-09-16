@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddPlanDialog } from "@/components/plans/AddPlanDialog";
+import { EditPlanDialog } from "@/components/plans/EditPlanDialog";
+import { DeletePlanDialog } from "@/components/plans/DeletePlanDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,6 +41,9 @@ export default function Plans() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -107,6 +112,16 @@ export default function Plans() {
       return years === 1 ? '1 ano' : `${years} anos`;
     }
     return `${years} ano${years > 1 ? 's' : ''} e ${remainingMonths} mese${remainingMonths > 1 ? 's' : ''}`;
+  };
+
+  const handleEditPlan = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setShowEditDialog(true);
+  };
+
+  const handleDeletePlan = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setShowDeleteDialog(true);
   };
 
   const filteredPlans = plans.filter(plan =>
@@ -222,7 +237,7 @@ export default function Plans() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditPlan(plan)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                           </DropdownMenuItem>
@@ -232,7 +247,10 @@ export default function Plans() {
                             {plan.is_active ? 'Desativar' : 'Ativar'}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem 
+                            className="text-destructive"
+                            onClick={() => handleDeletePlan(plan)}
+                          >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Excluir
                           </DropdownMenuItem>
@@ -251,6 +269,20 @@ export default function Plans() {
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
         onPlanAdded={fetchPlans}
+      />
+
+      <EditPlanDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        onPlanUpdated={fetchPlans}
+        plan={selectedPlan}
+      />
+
+      <DeletePlanDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onPlanDeleted={fetchPlans}
+        plan={selectedPlan}
       />
     </div>
   );
