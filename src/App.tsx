@@ -8,6 +8,9 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
+import Plans from "./pages/Plans";
+import CheckIn from "./pages/CheckIn";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,7 +67,7 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AppLayout>
-                    <div>Planos - Em desenvolvimento</div>
+                    <Plans />
                   </AppLayout>
                 </ProtectedRoute>
               } 
@@ -74,7 +77,7 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AppLayout>
-                    <div>Check-in - Em desenvolvimento</div>
+                    <CheckIn />
                   </AppLayout>
                 </ProtectedRoute>
               } 
@@ -84,7 +87,7 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <AppLayout>
-                    <div>Relatórios - Em desenvolvimento</div>
+                    <Reports />
                   </AppLayout>
                 </ProtectedRoute>
               } 

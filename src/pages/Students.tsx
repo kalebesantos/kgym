@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, CreditCard } from "lucide-react";
+import { AddStudentDialog } from "@/components/students/AddStudentDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ export default function Students() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     fetchStudents();
@@ -65,7 +67,10 @@ export default function Students() {
         .eq('role', 'student')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching students:', error);
+        throw error;
+      }
       setStudents(data || []);
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -141,7 +146,7 @@ export default function Students() {
             Gerencie os alunos da academia
           </p>
         </div>
-        <Button variant="primary">
+        <Button variant="primary" onClick={() => setShowAddDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Novo Aluno
         </Button>
@@ -239,6 +244,12 @@ export default function Students() {
           )}
         </CardContent>
       </Card>
+
+      <AddStudentDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onStudentAdded={fetchStudents}
+      />
     </div>
   );
 }
