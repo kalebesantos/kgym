@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Profile, Plan, StudentPlan } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,32 +34,7 @@ const studentPlanSchema = z.object({
 
 type StudentPlanFormData = z.infer<typeof studentPlanSchema>;
 
-interface Student {
-  id: string;
-  full_name: string;
-  phone: string | null;
-  cpf: string | null;
-  user_id: string;
-}
-
-interface Plan {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  duration_months: number;
-  is_active: boolean;
-}
-
-interface StudentPlan {
-  id: string;
-  student_id: string;
-  plan_id: string;
-  start_date: string;
-  end_date: string;
-  status: string;
-  plans: Plan;
-}
+type Student = Profile;
 
 interface ManageStudentPlanDialogProps {
   open: boolean;
