@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Profile } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface Student {
-  id: string;
-  full_name: string;
-  phone: string | null;
-  cpf: string | null;
-  user_id: string;
-}
+type Student = Profile;
 
 interface DeleteStudentDialogProps {
   open: boolean;

@@ -28,10 +28,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Student {
   id: string;
+  user_id: string;
   full_name: string;
-  phone: string;
-  cpf: string;
+  phone: string | null;
+  cpf: string | null;
+  role: 'admin' | 'student';
   created_at: string;
+  updated_at: string;
   student_plans?: {
     status: string;
     plan_id: string;
@@ -79,7 +82,7 @@ export default function Students() {
         console.error('Error fetching students:', error);
         throw error;
       }
-      setStudents(data || []);
+      setStudents((data || []) as Student[]);
     } catch (error) {
       console.error('Error fetching students:', error);
     } finally {

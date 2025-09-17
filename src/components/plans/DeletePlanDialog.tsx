@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Plan } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +15,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface Plan {
-  id: string;
-  name: string;
-  description: string | null;
-  price: number;
-  duration_months: number;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
 
 interface DeletePlanDialogProps {
   open: boolean;

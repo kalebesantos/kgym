@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Plan } from "@/lib/types";
 import { Plus, Search, MoreHorizontal, Edit, Trash2, DollarSign } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,15 +27,6 @@ import { DeletePlanDialog } from "@/components/plans/DeletePlanDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface Plan {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  duration_months: number;
-  is_active: boolean;
-  created_at: string;
-}
 
 export default function Plans() {
   const [plans, setPlans] = useState<Plan[]>([]);
