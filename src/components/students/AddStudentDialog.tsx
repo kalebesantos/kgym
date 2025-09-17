@@ -28,9 +28,8 @@ import {
 const studentSchema = z.object({
   full_name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   phone: z.string().optional(),
-  cpf: z.string().optional(),
+  cpf: z.string().min(6, "CPF deve ter pelo menos 6 dígitos"),
 });
 
 type StudentFormData = z.infer<typeof studentSchema>;
@@ -50,7 +49,6 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
     defaultValues: {
       full_name: "",
       email: "",
-      password: "",
       phone: "",
       cpf: "",
     },
@@ -59,10 +57,14 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
   const onSubmit = async (data: StudentFormData) => {
     setLoading(true);
     try {
+      // Use first 6 digits of CPF as password
+      const cpfDigits = data.cpf?.replace(/\D/g, '').slice(0, 6) || '123456';
+      const password = cpfDigits.length >= 6 ? cpfDigits : '123456';
+
       // Create user account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
-        password: data.password,
+        password: password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
         }
@@ -108,12 +110,14 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Adicionar Novo Aluno</DialogTitle>
-          <DialogDescription>
-            Preencha as informações do novo aluno. Uma conta será criada automaticamente.
-          </DialogDescription>
-        </DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Adicionar Novo Aluno</DialogTitle>
+            <DialogDescription>
+              Preencha as informações do novo aluno. Uma conta será criada automaticamente.
+              <br />
+              <strong>Nota:</strong> A senha será os 6 primeiros dígitos do CPF.
+            </DialogDescription>
+          </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
@@ -145,20 +149,6 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha Inicial *</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Senha para o aluno"
-              {...form.register("password")}
-            />
-            {form.formState.errors.password && (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.password.message}
-              </p>
-            )}
-          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -170,12 +160,17 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cpf">CPF</Label>
+              <Label htmlFor="cpf">CPF *</Label>
               <Input
                 id="cpf"
                 placeholder="000.000.000-00"
                 {...form.register("cpf")}
               />
+              {form.formState.errors.cpf && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.cpf.message}
+                </p>
+              )}
             </div>
           </div>
 

@@ -6,12 +6,18 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   profile: any;
+  setUser: (user: User | null) => void;
+  setProfile: (profile: any) => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   profile: null,
+  setUser: () => {},
+  setProfile: () => {},
+  logout: async () => {},
 });
 
 export const useAuth = () => {
@@ -70,8 +76,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, profile }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      profile, 
+      setUser, 
+      setProfile, 
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   );

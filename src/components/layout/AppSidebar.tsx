@@ -1,7 +1,20 @@
-import { BarChart3, Users, CreditCard, QrCode, Home, LogOut } from "lucide-react";
+import { useState } from "react";
+import { BarChart3, Users, CreditCard, QrCode, Home, LogOut, User, Settings } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { LogoutDialog } from "@/components/ui/logout-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import {
   Sidebar,
@@ -24,8 +37,10 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const location = useLocation();
   const { toast } = useToast();
+  const { profile, logout } = useAuth();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
@@ -36,11 +51,13 @@ export function AppSidebar() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await logout();
       toast({
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
       });
+      // Redirect to login page
+      window.location.href = '/';
     } catch (error) {
       toast({
         title: "Erro",
@@ -48,6 +65,19 @@ export function AppSidebar() {
         variant: "destructive",
       });
     }
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -88,18 +118,67 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={handleLogout}
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-            >
-              <LogOut className="h-4 w-4 shrink-0" />
-              <span>Sair</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="p-4 border-t">
+          {/* User Info */}
+          <div className="flex items-center gap-3 mb-4">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                {profile?.name ? getInitials(profile.name) : 'A'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {profile?.name || 'Administrador'}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {profile?.email || 'admin@kgym.com'}
+              </p>
+            </div>
+          </div>
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start">
+                <User className="h-4 w-4 mr-3" />
+                Minha Conta
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Settings className="h-4 w-4 mr-2" />
+                Configurações
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={confirmLogout} className="text-destructive">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Direct Logout Button */}
+          <Button 
+            variant="outline" 
+            className="w-full justify-start text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground mt-2"
+            onClick={confirmLogout}
+          >
+            <LogOut className="h-4 w-4 mr-3" />
+            Sair do Sistema
+          </Button>
+        </div>
       </SidebarFooter>
+
+      {/* Logout Dialog */}
+      <LogoutDialog
+        open={showLogoutDialog}
+        onOpenChange={setShowLogoutDialog}
+        onConfirm={handleLogout}
+        title="Sair do Sistema de Gestão"
+        description="Tem certeza que deseja sair do sistema de gestão? Você precisará fazer login novamente para acessar o painel administrativo."
+      />
     </Sidebar>
   );
 }
