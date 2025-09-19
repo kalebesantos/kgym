@@ -38,3 +38,30 @@ export interface CheckIn {
   check_in_time: string;
   created_at: string;
 }
+
+export interface WorkoutSheet {
+  id: string;
+  student_id: string;
+  name: string;
+  description?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  exercises?: Exercise[];
+}
+
+export interface Exercise {
+  id: string;
+  workout_sheet_id: string;
+  name: string;
+  muscle_group?: string;
+  sets?: number;
+  reps?: string;
+  weight?: string;
+  rest_time?: string;
+  instructions?: string;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}

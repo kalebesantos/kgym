@@ -43,6 +43,59 @@ export type Database = {
           },
         ]
       }
+      exercises: {
+        Row: {
+          created_at: string
+          id: string
+          instructions: string | null
+          muscle_group: string | null
+          name: string
+          order_index: number
+          reps: string | null
+          rest_time: string | null
+          sets: number | null
+          updated_at: string
+          weight: string | null
+          workout_sheet_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          muscle_group?: string | null
+          name: string
+          order_index?: number
+          reps?: string | null
+          rest_time?: string | null
+          sets?: number | null
+          updated_at?: string
+          weight?: string | null
+          workout_sheet_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          muscle_group?: string | null
+          name?: string
+          order_index?: number
+          reps?: string | null
+          rest_time?: string | null
+          sets?: number | null
+          updated_at?: string
+          weight?: string | null
+          workout_sheet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercises_workout_sheet_id_fkey"
+            columns: ["workout_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "workout_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plans: {
         Row: {
           created_at: string
@@ -156,6 +209,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      workout_sheets: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

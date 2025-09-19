@@ -5,6 +5,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import StudentDashboard from "./StudentDashboard";
 import StudentPlan from "./StudentPlan";
 import StudentCheckIn from "./StudentCheckIn";
+import StudentWorkout from "./StudentWorkout";
 
 export default function StudentArea() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -16,6 +17,8 @@ export default function StudentArea() {
         return <StudentDashboard />;
       case 'plan':
         return <StudentPlan />;
+      case 'workout':
+        return <StudentWorkout />;
       case 'checkin':
         return <StudentCheckIn />;
       default:

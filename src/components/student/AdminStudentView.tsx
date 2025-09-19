@@ -18,6 +18,7 @@ export function AdminStudentView({ children, currentPage, onPageChange }: AdminS
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Activity },
     { id: 'plan', label: 'Meu Plano', icon: CreditCard },
+    { id: 'workout', label: 'Ficha de Treino', icon: Activity },
     { id: 'checkin', label: 'Check-in', icon: Calendar },
   ];
 

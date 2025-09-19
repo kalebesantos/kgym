@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, CreditCard } from "lucide-react";
+import { Plus, Search, MoreHorizontal, Edit, Trash2, Users, CreditCard, Activity } from "lucide-react";
 import { AddStudentDialog } from "@/components/students/AddStudentDialog";
 import { EditStudentDialog } from "@/components/students/EditStudentDialog";
 import { DeleteStudentDialog } from "@/components/students/DeleteStudentDialog";
 import { ManageStudentPlanDialog } from "@/components/students/ManageStudentPlanDialog";
+import { StudentWorkoutDialog } from "@/components/workouts/StudentWorkoutDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,7 @@ export default function Students() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showManagePlanDialog, setShowManagePlanDialog] = useState(false);
+  const [showWorkoutDialog, setShowWorkoutDialog] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedStudentPlan, setSelectedStudentPlan] = useState<any>(null);
 
@@ -135,6 +137,11 @@ export default function Students() {
     setSelectedStudent(student);
     setSelectedStudentPlan(getCurrentPlan(student));
     setShowManagePlanDialog(true);
+  };
+
+  const handleManageWorkout = (student: Student) => {
+    setSelectedStudent(student);
+    setShowWorkoutDialog(true);
   };
 
   const filteredStudents = students.filter(student =>
@@ -255,6 +262,10 @@ export default function Students() {
                               <CreditCard className="h-4 w-4 mr-2" />
                               Gerenciar Plano
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleManageWorkout(student)}>
+                              <Activity className="h-4 w-4 mr-2" />
+                              Ficha de Treino
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
                               className="text-destructive"
@@ -301,6 +312,12 @@ export default function Students() {
         onPlanUpdated={fetchStudents}
         student={selectedStudent}
         currentPlan={selectedStudentPlan}
+      />
+
+      <StudentWorkoutDialog
+        open={showWorkoutDialog}
+        onOpenChange={setShowWorkoutDialog}
+        student={selectedStudent}
       />
     </div>
   );
