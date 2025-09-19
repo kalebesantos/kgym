@@ -70,7 +70,17 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
         }
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        if (authError.message.includes('User already registered') || authError.code === 'user_already_exists') {
+          toast({
+            title: "Email já cadastrado",
+            description: `O email ${data.email} já está sendo usado. Use um email diferente.`,
+            variant: "destructive",
+          });
+          return;
+        }
+        throw authError;
+      }
 
       if (authData.user) {
         // Create profile
@@ -97,9 +107,17 @@ export function AddStudentDialog({ open, onOpenChange, onStudentAdded }: AddStud
       }
     } catch (error: any) {
       console.error('Error creating student:', error);
+      let errorMessage = "Erro inesperado ao cadastrar aluno";
+      
+      if (error.message?.includes('User already registered') || error.code === 'user_already_exists') {
+        errorMessage = `O email ${data.email} já está sendo usado. Use um email diferente.`;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Erro ao cadastrar aluno",
-        description: error.message || "Erro inesperado ao cadastrar aluno",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
