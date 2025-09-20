@@ -4,8 +4,9 @@ import { AdminStudentView } from "@/components/student/AdminStudentView";
 import { useAuth } from "@/components/auth/AuthProvider";
 import StudentDashboard from "./StudentDashboard";
 import StudentPlan from "./StudentPlan";
-import StudentCheckIn from "./StudentCheckIn";
 import StudentWorkout from "./StudentWorkout";
+import StudentCheckIn from "./StudentCheckIn";
+import Profile from "../Profile";
 
 export default function StudentArea() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -21,6 +22,8 @@ export default function StudentArea() {
         return <StudentWorkout />;
       case 'checkin':
         return <StudentCheckIn />;
+      case 'profile':
+        return <Profile />;
       default:
         return <StudentDashboard />;
     }

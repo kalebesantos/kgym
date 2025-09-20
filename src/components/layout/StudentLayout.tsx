@@ -19,7 +19,8 @@ import {
   X,
   Calendar,
   CreditCard,
-  Activity
+  Activity,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,7 @@ export function StudentLayout({ children, currentPage, onPageChange }: StudentLa
     { id: 'plan', label: 'Meu Plano', icon: CreditCard },
     { id: 'workout', label: 'Ficha de Treino', icon: Activity },
     { id: 'checkin', label: 'Check-in', icon: Calendar },
+    { id: 'profile', label: 'Perfil', icon: User },
   ];
 
   const handleLogout = async () => {
@@ -151,6 +153,11 @@ export function StudentLayout({ children, currentPage, onPageChange }: StudentLa
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onPageChange?.('profile')}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Configurações
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={confirmLogout} className="text-destructive">
                   <LogOut className="h-4 w-4 mr-2" />

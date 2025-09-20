@@ -84,9 +84,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings className="h-4 w-4 mr-2" />
-                    Configurações
+                  <DropdownMenuItem asChild>
+                    <a href="/profile" className="flex items-center">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Configurações
+                    </a>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={confirmLogout} className="text-destructive">

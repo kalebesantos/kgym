@@ -147,9 +147,11 @@ export function AppSidebar() {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Settings className="h-4 w-4 mr-2" />
-                Configurações
+              <DropdownMenuItem asChild>
+                <NavLink to="/profile" className="flex items-center">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Configurações
+                </NavLink>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={confirmLogout} className="text-destructive">
