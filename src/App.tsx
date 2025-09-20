@@ -4,8 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/components/auth/AuthProvider";
-import { LoginForm } from "@/components/auth/LoginForm";
-import { StudentLoginForm } from "@/components/auth/StudentLoginForm";
+import Login from "@/pages/Login";
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
@@ -29,7 +28,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (!user) {
-    return <LoginForm />;
+    return <Login />;
   }
 
   // Check if user is admin
@@ -57,7 +56,7 @@ function StudentProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   
   if (!user) {
-    return <StudentLoginForm />;
+    return <Login />;
   }
 
   // Check if user is student
@@ -81,7 +80,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Navigate to="/student" replace />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
             <Route 
               path="/dashboard" 
               element={
