@@ -5,6 +5,7 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { setUser, setProfile } = useAuth();
+  const navigate = useNavigate();
 
   const teacherForm = useForm<TeacherLoginFormData>({
     resolver: zodResolver(teacherLoginSchema),
@@ -83,6 +85,9 @@ export default function Login() {
           title: "Login realizado",
           description: `Bem-vindo, ${profile.full_name}!`,
         });
+
+        // Redirect to dashboard for admin users
+        navigate('/dashboard');
       }
     } catch (error: any) {
       toast({
@@ -128,6 +133,9 @@ export default function Login() {
           title: "Login realizado",
           description: `Bem-vindo, ${profile.full_name}!`,
         });
+
+        // Redirect to student area
+        navigate('/student');
       }
     } catch (error: any) {
       toast({
