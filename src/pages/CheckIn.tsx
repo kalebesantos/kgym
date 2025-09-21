@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { QrCode, Scan, Clock, CheckCircle, History } from "lucide-react";
+import { QrCode, Scan, Clock, CheckCircle, History, User } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckInHistoryDialog } from "@/components/checkins/CheckInHistoryDialog";
+import { FaceRecognitionCamera } from "@/components/face/FaceRecognitionCamera";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -125,51 +127,90 @@ export default function CheckIn() {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Check-in Scanner */}
+      <div className="grid gap-6">
+        {/* Método de Check-in */}
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Scan className="h-5 w-5" />
-              Scanner de QR Code
+              <CheckCircle className="h-5 w-5" />
+              Check-in do Aluno
             </CardTitle>
             <CardDescription>
-              Escaneie ou digite o código QR do aluno
+              Escolha o método de check-in: reconhecimento facial ou QR Code
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Input
-                  placeholder="Código QR do aluno (KGYM-CHECKIN-...)"
-                  value={qrInput}
-                  onChange={(e) => setQrInput(e.target.value)}
-                  className="font-mono"
+            <Tabs defaultValue="face" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="face" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Reconhecimento Facial
+                </TabsTrigger>
+                <TabsTrigger value="qr" className="flex items-center gap-2">
+                  <QrCode className="h-4 w-4" />
+                  QR Code
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="face" className="mt-4">
+                <FaceRecognitionCamera
+                  onRecognized={(studentId) => processCheckIn(`KGYM-CHECKIN-${studentId}`)}
+                  onFallbackToQR={() => {
+                    // Switch to QR tab
+                    const qrTab = document.querySelector('[value="qr"]') as HTMLElement;
+                    qrTab?.click();
+                  }}
                 />
-              </div>
-              <Button 
-                type="submit" 
-                variant="primary" 
-                className="w-full"
-                disabled={loading || !qrInput.trim()}
-              >
-                {loading ? "Processando..." : "Fazer Check-in"}
-              </Button>
-            </form>
+              </TabsContent>
+              
+              <TabsContent value="qr" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Scan className="h-5 w-5" />
+                      Scanner de QR Code
+                    </CardTitle>
+                    <CardDescription>
+                      Escaneie ou digite o código QR do aluno
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Código QR do aluno (KGYM-CHECKIN-...)"
+                          value={qrInput}
+                          onChange={(e) => setQrInput(e.target.value)}
+                          className="font-mono"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        variant="primary" 
+                        className="w-full"
+                        disabled={loading || !qrInput.trim()}
+                      >
+                        {loading ? "Processando..." : "Fazer Check-in"}
+                      </Button>
+                    </form>
 
-            {lastCheckIn && (
-              <div className="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg">
-                <div className="flex items-center gap-2 text-success mb-2">
-                  <CheckCircle className="h-4 w-4" />
-                  <span className="font-medium">Check-in realizado!</span>
-                </div>
-                <div className="text-sm">
-                  <p><strong>{lastCheckIn.student_name}</strong></p>
-                  <p>Plano: {lastCheckIn.plan_name}</p>
-                  <p>Horário: {lastCheckIn.time.toLocaleTimeString('pt-BR')}</p>
-                </div>
-              </div>
-            )}
+                    {lastCheckIn && (
+                      <div className="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg">
+                        <div className="flex items-center gap-2 text-success mb-2">
+                          <CheckCircle className="h-4 w-4" />
+                          <span className="font-medium">Check-in realizado!</span>
+                        </div>
+                        <div className="text-sm">
+                          <p><strong>{lastCheckIn.student_name}</strong></p>
+                          <p>Plano: {lastCheckIn.plan_name}</p>
+                          <p>Horário: {lastCheckIn.time.toLocaleTimeString('pt-BR')}</p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
 
@@ -177,7 +218,7 @@ export default function CheckIn() {
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5" />
+              <User className="h-5 w-5" />
               Como usar
             </CardTitle>
           </CardHeader>
@@ -188,9 +229,9 @@ export default function CheckIn() {
                   1
                 </div>
                 <div>
-                  <p className="font-medium">Gere o QR Code do aluno</p>
+                  <p className="font-medium">Reconhecimento Facial</p>
                   <p className="text-sm text-muted-foreground">
-                    Cada aluno tem um código único no formato KGYM-CHECKIN-{"{ID}"}
+                    Posicione o rosto do aluno na moldura circular e clique em "Escanear Face"
                   </p>
                 </div>
               </div>
@@ -200,9 +241,9 @@ export default function CheckIn() {
                   2
                 </div>
                 <div>
-                  <p className="font-medium">Escaneie ou digite o código</p>
+                  <p className="font-medium">QR Code Alternativo</p>
                   <p className="text-sm text-muted-foreground">
-                    Use um leitor de QR Code ou digite manualmente
+                    Use um leitor de QR Code ou digite manualmente no formato KGYM-CHECKIN-{"{ID}"}
                   </p>
                 </div>
               </div>
@@ -222,8 +263,8 @@ export default function CheckIn() {
 
             <div className="pt-4 border-t">
               <p className="text-sm text-muted-foreground">
-                <strong>Nota:</strong> Apenas alunos com planos ativos podem fazer check-in.
-                Planos expirados serão automaticamente rejeitados.
+                <strong>Nota:</strong> Para usar reconhecimento facial, o aluno deve ter cadastrado sua foto no perfil.
+                Apenas alunos com planos ativos podem fazer check-in.
               </p>
             </div>
           </CardContent>

@@ -133,9 +133,11 @@ export type Database = {
         Row: {
           cpf: string | null
           created_at: string
+          face_encoding: string | null
           full_name: string
           id: string
           phone: string | null
+          profile_photo_url: string | null
           role: string
           updated_at: string
           user_id: string
@@ -143,9 +145,11 @@ export type Database = {
         Insert: {
           cpf?: string | null
           created_at?: string
+          face_encoding?: string | null
           full_name: string
           id?: string
           phone?: string | null
+          profile_photo_url?: string | null
           role?: string
           updated_at?: string
           user_id: string
@@ -153,9 +157,11 @@ export type Database = {
         Update: {
           cpf?: string | null
           created_at?: string
+          face_encoding?: string | null
           full_name?: string
           id?: string
           phone?: string | null
+          profile_photo_url?: string | null
           role?: string
           updated_at?: string
           user_id?: string
